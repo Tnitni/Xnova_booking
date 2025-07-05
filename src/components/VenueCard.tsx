@@ -1,6 +1,5 @@
 import React from 'react';
-import { MapPin, Wifi, Car, Camera, Star, Snowflake, Droplets, Clock, Calendar, Users } from 'lucide-react';
-import { useLanguage } from '../contexts/LanguageContext';
+import { MapPin, Wifi, Car, Camera, Star, Snowflake, Droplets, Clock, Calendar } from 'lucide-react';
 import { Venue } from '../types/venue';
 
 interface VenueCardProps {
@@ -11,20 +10,19 @@ interface VenueCardProps {
 }
 
 const VenueCard: React.FC<VenueCardProps> = ({ venue, selectedDate, selectedTimeSlot, onBook }) => {
-  const { t } = useLanguage();
 
   const getAmenityIcon = (amenity: string) => {
     switch (amenity) {
       case 'wifi':
-        return <Wifi size={14} />;
+        return <Wifi size={12} />;
       case 'parking':
-        return <Car size={14} />;
+        return <Car size={12} />;
       case 'camera':
-        return <Camera size={14} />;
+        return <Camera size={12} />;
       case 'ac':
-        return <Snowflake size={14} />;
+        return <Snowflake size={12} />;
       case 'free-water':
-        return <Droplets size={14} />;
+        return <Droplets size={12} />;
       default:
         return null;
     }
@@ -92,25 +90,24 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue, selectedDate, selectedTime
 
   return (
     <div className="card hover-scale">
-      <div className="flex flex-col lg:flex-row gap-4">
+      <div className="flex flex-col gap-3">
         {/* Image Section */}
-        <div className="relative lg:w-80 flex-shrink-0">
+        <div className="relative">
           <img
-            src={venue.image}
+            src="https://i.pinimg.com/736x/30/e8/00/30e8005d937ed7f5eefd42a31761860e.jpg"
             alt={venue.name}
-            className="w-full h-48 lg:h-full object-cover rounded-lg"
+            className="w-full h-28 object-cover rounded-lg"
           />
-          <div className="absolute top-3 right-3">
+          <div className="absolute top-2 left-2">
             <span className="status-badge status-available text-xs px-2 py-1">
               {venue.type}
             </span>
           </div>
-          <div className="absolute bottom-3 left-3">
-            <div className="bg-black/70 backdrop-blur-sm rounded-lg px-2 py-1">
-              <div className="flex items-center text-white text-xs">
-                <Calendar size={12} className="mr-1" />
-                <span>{availableSlots.length || 'Nhiều'} khung giờ</span>
-              </div>
+          <div className="absolute top-2 right-2">
+            <div className="bg-black/70 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center">
+              <Star size={12} className="text-yellow-400 fill-current mr-1" />
+              <span className="text-white text-xs font-medium">{venue.rating}</span>
+              <span className="text-gray-300 text-xs ml-1">({venue.reviews})</span>
             </div>
           </div>
         </div>
@@ -119,49 +116,25 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue, selectedDate, selectedTime
         <div className="flex-1 flex flex-col justify-between">
           {/* Header Info */}
           <div>
-            <div className="flex items-start justify-between mb-3">
+            <div className="flex items-start justify-between mb-2">
               <div className="flex-1">
-                <h3 className="text-xl font-semibold text-white mb-2 line-clamp-1">{venue.name}</h3>
+                <h3 className="text-lg font-semibold text-white mb-1 line-clamp-1">{venue.name}</h3>
                 <div className="flex items-center text-gray-400 text-sm mb-2">
-                  <MapPin size={14} className="mr-1 flex-shrink-0" />
+                  <MapPin size={12} className="mr-1 flex-shrink-0" />
                   <span className="truncate">{venue.location} • {venue.distance}</span>
                 </div>
-                <div className="flex items-center">
-                  <Star size={16} className="text-yellow-400 mr-1 flex-shrink-0" />
-                  <span className="text-white font-medium">{venue.rating}</span>
-                  <span className="text-gray-400 text-sm ml-1">({venue.reviews} đánh giá)</span>
-                </div>
-              </div>
-              
-              {/* Price Section */}
-              <div className="text-right ml-4 flex-shrink-0">
-                {showPriceRange ? (
-                  <div>
-                    <div className="text-lg font-bold text-green-400">
-                      {(minPrice / 1000).toFixed(0)}K - {(maxPrice / 1000).toFixed(0)}K
-                    </div>
-                    <div className="text-gray-400 text-sm">/giờ</div>
-                  </div>
-                ) : (
-                  <div>
-                    <div className="text-2xl font-bold text-green-400">
-                      {currentPrice.toLocaleString()}đ
-                    </div>
-                    <div className="text-gray-400 text-sm">/giờ</div>
-                  </div>
-                )}
               </div>
             </div>
 
             {/* Description */}
             {venue.description && (
-              <p className="text-gray-300 text-sm mb-3 line-clamp-2">
+              <p className="text-gray-300 text-sm mb-2 line-clamp-2">
                 {venue.description}
               </p>
             )}
 
             {/* Amenities */}
-            <div className="flex items-center flex-wrap gap-3 mb-4">
+            <div className="flex items-center flex-wrap gap-2 mb-3">
               {venue.amenities.slice(0, 4).map((amenity, index) => (
                 <div key={index} className="flex items-center text-gray-400 text-xs">
                   {getAmenityIcon(amenity)}
@@ -170,38 +143,41 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue, selectedDate, selectedTime
               ))}
               {venue.amenities.length > 4 && (
                 <span className="text-xs text-gray-400">
-                  +{venue.amenities.length - 4} tiện ích khác
+                  +{venue.amenities.length - 4} khác
                 </span>
               )}
             </div>
 
-            {/* Available Slots - Enhanced Display */}
+            {/* Available Slots - Enhanced Display (Max 3 slots) */}
             {selectedDate && availableSlots.length > 0 && (
-              <div className="mb-4">
-                <p className="text-sm text-gray-300 mb-2 flex items-center">
-                  <Clock size={14} className="mr-1" />
-                  Khung giờ có sẵn ngày {new Date(selectedDate).toLocaleDateString('vi-VN')}:
-                </p>
-                <div className="grid grid-cols-4 gap-2">
-                  {availableSlots.slice(0, 8).map((slot, index) => {
+              <div className="mb-3">
+                <div className="flex gap-2">
+                  {availableSlots.slice(0, 3).map((slot, index) => {
                     const timeSlot = dayAvailability?.timeSlots.find(ts => ts.time === slot);
                     const slotPrice = timeSlot?.price || venue.basePrice;
                     
                     return (
-                      <div key={index} className="bg-gray-800 rounded-lg p-2 text-center border border-gray-600">
-                        <div className="text-white text-sm font-medium">{slot}</div>
+                      <button
+                        key={index}
+                        onClick={() => onBook?.(venue.id, selectedDate, slot)}
+                        className="bg-gray-800 hover:bg-lime-600 rounded-lg p-2 text-center border border-gray-600 hover:border-lime-500 transition-all hover:scale-105 flex-1"
+                      >
+                        <div className="text-white text-xs font-medium">{slot}</div>
                         <div className="text-green-400 text-xs">
-                          {(slotPrice / 1000).toFixed(0)}K
+                          {(slotPrice / 1000).toFixed(0)},000đ
                         </div>
-                      </div>
+                      </button>
                     );
                   })}
-                  {availableSlots.length > 8 && (
-                    <div className="bg-gray-800 rounded-lg p-2 text-center border border-gray-600 flex items-center justify-center">
-                      <span className="text-gray-400 text-xs">
-                        +{availableSlots.length - 8}
-                      </span>
-                    </div>
+                  {availableSlots.length > 3 && (
+                    <button
+                      onClick={() => onBook?.(venue.id, selectedDate)}
+                      className="bg-gray-800 hover:bg-blue-600 rounded-lg p-2 text-center border border-gray-600 hover:border-blue-500 transition-all hover:scale-105 flex-1"
+                    >
+                      <div className="text-blue-400 text-xs">
+                        +{availableSlots.length - 3} khác
+                      </div>
+                    </button>
                   )}
                 </div>
               </div>
@@ -209,19 +185,25 @@ const VenueCard: React.FC<VenueCardProps> = ({ venue, selectedDate, selectedTime
           </div>
 
           {/* Action Section */}
-          <div className="flex items-center justify-between pt-3 border-t border-gray-700">
-            <div className="flex items-center text-sm text-gray-400">
-              <Users size={14} className="mr-1" />
-              <span>
-                {selectedDate ? 
-                  `${availableSlots.length} khung giờ có sẵn` : 
-                  'Có sẵn hôm nay'
-                }
-              </span>
+          <div className="flex items-center justify-between pt-2 border-t border-gray-700">
+            {/* Price Section */}
+            <div className="text-left">
+              {showPriceRange ? (
+                <div className="text-lg font-bold text-green-400">
+                  {(minPrice / 1000).toFixed(0)},000đ - {(maxPrice / 1000).toFixed(0)},000đ
+                  <span className="text-gray-400 text-xs ml-1">/giờ</span>
+                </div>
+              ) : (
+                <div className="text-lg font-bold text-green-400">
+                  {(currentPrice / 1000).toFixed(0)},000đ
+                  <span className="text-gray-400 text-xs ml-1">/giờ</span>
+                </div>
+              )}
             </div>
+            
             <button
               onClick={() => onBook?.(venue.id, selectedDate, selectedTimeSlot)}
-              className="btn-secondary px-6 py-2"
+              className="btn-secondary px-4 py-2 text-sm"
             >
               Đặt ngay
             </button>

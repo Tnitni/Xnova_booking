@@ -37,14 +37,6 @@ const BookingSummaryModal: React.FC<BookingSummaryModalProps> = ({
     }
   }, [preSelectedDate, preSelectedTimeSlot]);
 
-  // Auto-advance logic
-  useEffect(() => {
-    // Auto-select first available field when time is selected
-    if (selectedTime && !selectedField && availableFields.length > 0) {
-      setSelectedField(availableFields[0].id);
-    }
-  }, [selectedTime]);
-
   // Show booking summary when payment method is selected
   useEffect(() => {
     if (paymentMethod && selectedDate && selectedTime && selectedField) {
@@ -91,6 +83,29 @@ const BookingSummaryModal: React.FC<BookingSummaryModalProps> = ({
 
   const selectedTimeSlot = availableTimeSlots.find(slot => slot.time === selectedTime);
   const totalPrice = selectedTimeSlot?.price || venue?.basePrice || 0;
+
+  // Auto-select first available field when time is selected and fields are available
+  useEffect(() => {
+    if (selectedTime && !selectedField && availableFields.length > 0) {
+      setSelectedField(availableFields[0].id);
+    }
+  }, [selectedTime, selectedField, availableFields]);
+
+  // Auto-scroll to step 3 when modal opens with preSelectedTimeSlot
+  useEffect(() => {
+    if (isOpen && preSelectedTimeSlot && selectedTime && selectedField) {
+      // Small delay to ensure DOM is rendered
+      setTimeout(() => {
+        const step3Element = document.querySelector('[data-step="3"]');
+        if (step3Element) {
+          step3Element.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        }
+      }, 300);
+    }
+  }, [isOpen, preSelectedTimeSlot, selectedTime, selectedField]);
 
   // Calculate current step for progress indicator
   const getCurrentStep = () => {
@@ -283,7 +298,7 @@ const BookingSummaryModal: React.FC<BookingSummaryModalProps> = ({
 
               {/* Step 3: Field Selection */}
               {selectedTime && (
-                <div className={`transition-all duration-300 ${currentStep >= 3 ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
+                <div className={`transition-all duration-300 ${currentStep >= 3 ? 'opacity-100' : 'opacity-50 pointer-events-none'}`} data-step="3">
                   <div className={`p-6 rounded-lg border-2 transition-all duration-300 ${
                     currentStep === 3 
                       ? 'border-purple-500 bg-purple-500/10' 
